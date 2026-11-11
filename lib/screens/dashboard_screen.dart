@@ -27,11 +27,19 @@ class DashboardScreen extends StatelessWidget {
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Dashboard', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text(
+              'Dashboard',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
             Text(
-              'Welcome back, ${state.ownerName} · Today: ${AppTheme.formatDate(DateTime.now().toIso8601String().substring(0, 10))}',
-              style: const TextStyle(fontSize: 11.5, color: AppTheme.textMuted),
+              'Welcome, ${state.ownerName} · ${AppTheme.formatDate(DateTime.now().toIso8601String().substring(0, 10))}',
+              style: const TextStyle(fontSize: 11, color: AppTheme.textMuted),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -44,7 +52,7 @@ class DashboardScreen extends StatelessWidget {
             icon: const Icon(Icons.settings_outlined),
             onPressed: () => onNavigate('settings'),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 4),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -54,7 +62,7 @@ class DashboardScreen extends StatelessWidget {
         label: const Text('New Sale (POS)', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -68,7 +76,7 @@ class DashboardScreen extends StatelessWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
-                  childAspectRatio: constraints.maxWidth > 550 ? 1.4 : 1.25,
+                  childAspectRatio: constraints.maxWidth > 550 ? 1.35 : 1.05,
                   children: [
                     KpiCard(
                       title: 'Total Sales',
@@ -138,16 +146,23 @@ class DashboardScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'Sales Performance (PKR Lakh)',
-                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                            const Expanded(
+                              child: Text(
+                                'Sales Performance',
+                                style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.bold),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                             TextButton.icon(
                               onPressed: () => onNavigate('reports'),
-                              icon: const Icon(Icons.analytics_outlined, size: 16),
-                              label: const Text('View Reports', style: TextStyle(fontSize: 12)),
+                              icon: const Icon(Icons.analytics_outlined, size: 15),
+                              label: const Text('Reports', style: TextStyle(fontSize: 11.5)),
+                              style: TextButton.styleFrom(
+                                visualDensity: VisualDensity.compact,
+                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                              ),
                             ),
                           ],
                         ),
@@ -279,20 +294,26 @@ class DashboardScreen extends StatelessWidget {
                             ),
                             title: Text(
                               '${inv.invoiceNo} · ${inv.customer.name}',
-                              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13.5),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
                             ),
                             subtitle: Text(
                               '${AppTheme.formatDate(inv.date)} · ${inv.paymentMethod}',
-                              style: const TextStyle(fontSize: 11.5),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 11),
                             ),
                             trailing: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
                                   AppTheme.formatCurrency(inv.grandTotal),
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                                 ),
+                                const SizedBox(height: 2),
                                 StatusBadge(text: inv.status),
                               ],
                             ),
@@ -348,24 +369,30 @@ class DashboardScreen extends StatelessWidget {
                                   ),
                                   title: Text(
                                     inv.customer.name,
-                                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13.5),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
                                   ),
                                   subtitle: Text(
                                     'Due: ${AppTheme.formatDate(inv.dueDate)}',
-                                    style: const TextStyle(fontSize: 11.5),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(fontSize: 11),
                                   ),
                                   trailing: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment: CrossAxisAlignment.end,
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Text(
                                         AppTheme.formatCurrency(inv.remainingBalance),
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 13,
+                                          fontSize: 12,
                                           color: AppTheme.alertRed,
                                         ),
                                       ),
+                                      const SizedBox(height: 2),
                                       StatusBadge(text: inv.status),
                                     ],
                                   ),
