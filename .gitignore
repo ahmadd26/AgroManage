@@ -1,0 +1,56 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+.idea/
+.idea_modules/
+
+# Visual Studio Code related
+.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+
+# Android related
+**/android/**/gradle-wrapper.jar
+**/android/.gradle
+**/android/.kotlin
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/local.properties
+**/android/**/GeneratedPluginRegistrant.java
+
+# Exceptions to above rules
+!**/android/gradlew
+!**/android/gradlew.bat
+!**/android/gradle/wrapper/gradle-wrapper.jar
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Build outputs
+/android/app/debug
+/android/app/profile
+/android/app/release
