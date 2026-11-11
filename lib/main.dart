@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'theme/app_theme.dart';
 import 'state/app_state.dart';
+import 'screens/splash_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_shell.dart';
 
@@ -18,6 +19,7 @@ class AgroManageApp extends StatefulWidget {
 
 class _AgroManageAppState extends State<AgroManageApp> {
   final AppState _appState = AppState();
+  bool _showSplash = true;
   bool _isAuthenticated = false;
 
   @override
@@ -31,19 +33,25 @@ class _AgroManageAppState extends State<AgroManageApp> {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: _appState.themeMode,
-          home: _isAuthenticated
-              ? MainShell(
-                  state: _appState,
-                  onLogout: () {
-                    setState(() => _isAuthenticated = false);
+          home: _showSplash
+              ? SplashScreen(
+                  onFinish: () {
+                    setState(() => _showSplash = false);
                   },
                 )
-              : LoginScreen(
-                  state: _appState,
-                  onLoginSuccess: () {
-                    setState(() => _isAuthenticated = true);
-                  },
-                ),
+              : (_isAuthenticated
+                  ? MainShell(
+                      state: _appState,
+                      onLogout: () {
+                        setState(() => _isAuthenticated = false);
+                      },
+                    )
+                  : LoginScreen(
+                      state: _appState,
+                      onLoginSuccess: () {
+                        setState(() => _isAuthenticated = true);
+                      },
+                    )),
         );
       },
     );
