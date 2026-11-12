@@ -343,6 +343,20 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addNewCartLine([Product? product]) {
+    Product target;
+    if (product != null) {
+      target = product;
+    } else {
+      target = products.firstWhere(
+        (p) => !cartLines.any((l) => l.product.id == p.id),
+        orElse: () => products.first,
+      );
+    }
+    cartLines.add(CartLine(product: target, quantity: 1, price: target.salePrice));
+    notifyListeners();
+  }
+
   void updateCartLineQuantity(int index, int quantity) {
     if (quantity <= 0) {
       cartLines.removeAt(index);

@@ -37,7 +37,156 @@ class _PosScreenState extends State<PosScreen> {
   }
 
   void _recalc() {
-    setState(() {});
+    setState(() {
+      if (_selectedPaymentMethod != 'Credit') {
+        _paidController.text = widget.state.cartGrandTotal.toStringAsFixed(0);
+        widget.state.paidAmount = widget.state.cartGrandTotal;
+      }
+    });
+  }
+
+  void _showProductPicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        String query = '';
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            final filtered = widget.state.products.where((p) {
+              return p.name.toLowerCase().contains(query.toLowerCase()) ||
+                  p.category.toLowerCase().contains(query.toLowerCase());
+            }).toList();
+
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.72,
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
+              child: Column(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Select Product to Add',
+                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        onPressed: () => Navigator.pop(ctx),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    decoration: const InputDecoration(
+                      hintText: 'Search products by name or category...',
+                      prefixIcon: Icon(Icons.search, size: 20),
+                      isDense: true,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    ),
+                    onChanged: (val) => setModalState(() => query = val),
+                  ),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: filtered.isEmpty
+                        ? const Center(child: Text('No matching products found.'))
+                        : ListView.separated(
+                            itemCount: filtered.length,
+                            separatorBuilder: (_, __) => const Divider(height: 1),
+                            itemBuilder: (context, i) {
+                              final p = filtered[i];
+                              final inCart = widget.state.cartLines.any((l) => l.product.id == p.id);
+
+                              return ListTile(
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                leading: CircleAvatar(
+                                  backgroundColor: p.isLowStock
+                                      ? AppTheme.alertRedLight
+                                      : AppTheme.primaryGreenLight,
+                                  child: Icon(
+                                    p.category == 'Seeds'
+                                        ? Icons.grain
+                                        : (p.category == 'Fertilizers'
+                                            ? Icons.science_outlined
+                                            : Icons.bug_report_outlined),
+                                    color: p.isLowStock ? AppTheme.alertRed : AppTheme.primaryGreenDark,
+                                    size: 20,
+                                  ),
+                                ),
+                                title: Text(
+                                  p.name,
+                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                subtitle: Text(
+                                  '${p.category} · Stock: ${p.stock} ${p.unit}',
+                                  style: const TextStyle(fontSize: 11.5),
+                                ),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      AppTheme.formatCurrency(p.salePrice),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
+                                        color: AppTheme.primaryGreenDark,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: inCart ? AppTheme.secondaryBlue : AppTheme.primaryGreen,
+                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                        minimumSize: Size.zero,
+                                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      ),
+                                      onPressed: () {
+                                        widget.state.addCartLine(p);
+                                        _recalc();
+                                        Navigator.pop(ctx);
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            backgroundColor: AppTheme.primaryGreen,
+                                            duration: const Duration(milliseconds: 900),
+                                            content: Text('Added "${p.name}" to cart'),
+                                          ),
+                                        );
+                                      },
+                                      child: Text(
+                                        inCart ? '+1 More' : 'Add',
+                                        style: const TextStyle(fontSize: 11.5, color: Colors.white),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   void _onDiscountChanged(String val) {
@@ -205,19 +354,33 @@ class _PosScreenState extends State<PosScreen> {
                         'Items in Sale',
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                       ),
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          if (state.products.isNotEmpty) {
-                            state.addCartLine(state.products.first);
-                            _recalc();
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.secondaryBlue,
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        ),
-                        icon: const Icon(Icons.add, size: 18),
-                        label: const Text('Add Product', style: TextStyle(fontSize: 12.5)),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          OutlinedButton.icon(
+                            onPressed: () => _showProductPicker(context),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                            ),
+                            icon: const Icon(Icons.search, size: 16),
+                            label: const Text('Catalog', style: TextStyle(fontSize: 12)),
+                          ),
+                          const SizedBox(width: 8),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              if (state.products.isNotEmpty) {
+                                state.addNewCartLine();
+                                _recalc();
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.secondaryBlue,
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                            ),
+                            icon: const Icon(Icons.add, size: 18),
+                            label: const Text('Add Product', style: TextStyle(fontSize: 12.5)),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -275,6 +438,7 @@ class _PosScreenState extends State<PosScreen> {
                                             line.product = p;
                                             line.price = p.salePrice;
                                           });
+                                          _recalc();
                                         }
                                       },
                                     ),
@@ -333,19 +497,33 @@ class _PosScreenState extends State<PosScreen> {
                                       ],
                                     ),
                                   ),
-                                  // Rate x Qty & Line Total
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        '@ ${AppTheme.formatCurrency(line.price)} = ',
-                                        style: const TextStyle(fontSize: 11.5, color: AppTheme.textMuted),
-                                      ),
-                                      Text(
-                                        AppTheme.formatCurrency(line.lineTotal),
-                                        style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: AppTheme.primaryGreenDark),
-                                      ),
-                                    ],
+                                  const SizedBox(width: 8),
+                                  // Rate x Qty & Line Total (wrapped in Expanded with FittedBox)
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          '${line.quantity} × ${AppTheme.formatCurrency(line.price)}',
+                                          style: const TextStyle(fontSize: 11, color: AppTheme.textMuted),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          alignment: Alignment.centerRight,
+                                          child: Text(
+                                            AppTheme.formatCurrency(line.lineTotal),
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w900,
+                                              fontSize: 14.5,
+                                              color: AppTheme.primaryGreenDark,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
@@ -376,9 +554,16 @@ class _PosScreenState extends State<PosScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Subtotal', style: TextStyle(color: AppTheme.textMuted)),
-                      Text(
-                        AppTheme.formatCurrency(state.cartSubtotal),
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            AppTheme.formatCurrency(state.cartSubtotal),
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -417,12 +602,19 @@ class _PosScreenState extends State<PosScreen> {
                         'Total Payable',
                         style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
                       ),
-                      Text(
-                        AppTheme.formatCurrency(state.cartGrandTotal),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 18,
-                          color: AppTheme.primaryGreenDark,
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            AppTheme.formatCurrency(state.cartGrandTotal),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 18,
+                              color: AppTheme.primaryGreenDark,
+                            ),
+                          ),
                         ),
                       ),
                     ],
@@ -459,7 +651,7 @@ class _PosScreenState extends State<PosScreen> {
                         child: Text('Paid Amount (PKR)', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
                       ),
                       SizedBox(
-                        width: 140,
+                        width: 120,
                         child: TextField(
                           controller: _paidController,
                           keyboardType: TextInputType.number,
@@ -481,12 +673,19 @@ class _PosScreenState extends State<PosScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Remaining (Khata)', style: TextStyle(fontWeight: FontWeight.w600)),
-                      Text(
-                        AppTheme.formatCurrency(state.cartRemaining),
-                        style: TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 16,
-                          color: state.cartRemaining > 0 ? AppTheme.alertRed : AppTheme.primaryGreenDark,
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            AppTheme.formatCurrency(state.cartRemaining),
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 16,
+                              color: state.cartRemaining > 0 ? AppTheme.alertRed : AppTheme.primaryGreenDark,
+                            ),
+                          ),
                         ),
                       ),
                     ],
