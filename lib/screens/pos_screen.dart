@@ -346,13 +346,39 @@ class _PosScreenState extends State<PosScreen> {
 
                   const SizedBox(height: 20),
 
-                  // Cart Items Header
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // Cart Items Header (Responsive Wrap prevents overflow on mobile)
+                  Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 8,
+                    runSpacing: 8,
                     children: [
-                      const Text(
-                        'Items in Sale',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            'Items in Sale',
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          ),
+                          if (state.cartLines.isNotEmpty) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: AppTheme.secondaryBlueLight,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                '${state.cartLines.length}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                  color: AppTheme.secondaryBlue,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                       Row(
                         mainAxisSize: MainAxisSize.min,
@@ -360,12 +386,14 @@ class _PosScreenState extends State<PosScreen> {
                           OutlinedButton.icon(
                             onPressed: () => _showProductPicker(context),
                             style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
-                            icon: const Icon(Icons.search, size: 16),
-                            label: const Text('Catalog', style: TextStyle(fontSize: 12)),
+                            icon: const Icon(Icons.search, size: 15),
+                            label: const Text('Catalog', style: TextStyle(fontSize: 11.5)),
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 6),
                           ElevatedButton.icon(
                             onPressed: () {
                               if (state.products.isNotEmpty) {
@@ -375,10 +403,12 @@ class _PosScreenState extends State<PosScreen> {
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppTheme.secondaryBlue,
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
-                            icon: const Icon(Icons.add, size: 18),
-                            label: const Text('Add Product', style: TextStyle(fontSize: 12.5)),
+                            icon: const Icon(Icons.add, size: 16),
+                            label: const Text('Add Product', style: TextStyle(fontSize: 11.5)),
                           ),
                         ],
                       ),
