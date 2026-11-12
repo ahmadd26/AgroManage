@@ -77,7 +77,7 @@ class CustomerDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: onBack),
-        title: Text('${customer.name} · Ledger'),
+        title: Text('${customer.name} · Ledger', overflow: TextOverflow.ellipsis),
         actions: [
           if (balance > 0)
             IconButton(
@@ -89,7 +89,7 @@ class CustomerDetailScreen extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: const BoxDecoration(
           color: Colors.white,
           border: Border(top: BorderSide(color: AppTheme.lightLine)),
@@ -100,17 +100,23 @@ class CustomerDetailScreen extends StatelessWidget {
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () => onRecordPayment(history.isNotEmpty ? history.first.invoiceNo : ''),
-                  icon: const Icon(Icons.payment),
-                  label: const Text('Record Payment'),
+                  icon: const Icon(Icons.payment, size: 18),
+                  label: const FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text('Record Payment'),
+                  ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
             ],
             Expanded(
               child: ElevatedButton.icon(
                 onPressed: () => onNewSaleForCustomer(customer),
-                icon: const Icon(Icons.add_shopping_cart),
-                label: const Text('New Sale'),
+                icon: const Icon(Icons.add_shopping_cart, size: 18),
+                label: const FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text('New Sale'),
+                ),
               ),
             ),
           ],
@@ -173,39 +179,81 @@ class CustomerDetailScreen extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // Financial Balance Overview (3 KPI Grid)
-            Row(
-              children: [
-                Expanded(
-                  child: KpiCard(
-                    title: 'Total Billed',
-                    value: AppTheme.formatCurrency(billed),
-                    icon: Icons.receipt_long,
-                    color: AppTheme.secondaryBlue,
-                    bgTint: AppTheme.secondaryBlueLight,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: KpiCard(
-                    title: 'Total Recovered',
-                    value: AppTheme.formatCurrency(paid),
-                    icon: Icons.check_circle_outline,
-                    color: AppTheme.primaryGreen,
-                    bgTint: AppTheme.primaryGreenLight,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: KpiCard(
-                    title: 'Khata Due',
-                    value: AppTheme.formatCurrency(balance),
-                    icon: Icons.account_balance_wallet_outlined,
-                    color: balance > 0 ? AppTheme.alertRed : AppTheme.primaryGreen,
-                    bgTint: balance > 0 ? AppTheme.alertRedLight : AppTheme.primaryGreenLight,
-                  ),
-                ),
-              ],
+            // Financial Balance Overview (Responsive KPI Grid)
+            LayoutBuilder(
+              builder: (context, constraints) {
+                if (constraints.maxWidth < 550) {
+                  return Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: KpiCard(
+                              title: 'Total Billed',
+                              value: AppTheme.formatCurrency(billed),
+                              icon: Icons.receipt_long,
+                              color: AppTheme.secondaryBlue,
+                              bgTint: AppTheme.secondaryBlueLight,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: KpiCard(
+                              title: 'Total Recovered',
+                              value: AppTheme.formatCurrency(paid),
+                              icon: Icons.check_circle_outline,
+                              color: AppTheme.primaryGreen,
+                              bgTint: AppTheme.primaryGreenLight,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      KpiCard(
+                        title: 'Khata Due',
+                        value: AppTheme.formatCurrency(balance),
+                        icon: Icons.account_balance_wallet_outlined,
+                        color: balance > 0 ? AppTheme.alertRed : AppTheme.primaryGreen,
+                        bgTint: balance > 0 ? AppTheme.alertRedLight : AppTheme.primaryGreenLight,
+                      ),
+                    ],
+                  );
+                }
+
+                return Row(
+                  children: [
+                    Expanded(
+                      child: KpiCard(
+                        title: 'Total Billed',
+                        value: AppTheme.formatCurrency(billed),
+                        icon: Icons.receipt_long,
+                        color: AppTheme.secondaryBlue,
+                        bgTint: AppTheme.secondaryBlueLight,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: KpiCard(
+                        title: 'Total Recovered',
+                        value: AppTheme.formatCurrency(paid),
+                        icon: Icons.check_circle_outline,
+                        color: AppTheme.primaryGreen,
+                        bgTint: AppTheme.primaryGreenLight,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: KpiCard(
+                        title: 'Khata Due',
+                        value: AppTheme.formatCurrency(balance),
+                        icon: Icons.account_balance_wallet_outlined,
+                        color: balance > 0 ? AppTheme.alertRed : AppTheme.primaryGreen,
+                        bgTint: balance > 0 ? AppTheme.alertRedLight : AppTheme.primaryGreenLight,
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
 
             const SizedBox(height: 20),
@@ -261,6 +309,7 @@ class CustomerDetailScreen extends StatelessWidget {
                         style: const TextStyle(fontSize: 12),
                       ),
                       trailing: Column(
+                        mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [

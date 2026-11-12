@@ -106,11 +106,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Showing ${filtered.length} products',
-                  style: const TextStyle(fontSize: 12.5, color: AppTheme.textMuted, fontWeight: FontWeight.w500),
+                Expanded(
+                  child: Text(
+                    'Showing ${filtered.length} products',
+                    style: const TextStyle(fontSize: 12.5, color: AppTheme.textMuted, fontWeight: FontWeight.w500),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
                 Text(
                   'Stock Value: ${AppTheme.formatCurrency(state.totalStockValue)}',
@@ -208,14 +211,16 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                         ],
                                       ),
                                       const SizedBox(height: 4),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      Wrap(
+                                        spacing: 10,
+                                        runSpacing: 2,
+                                        alignment: WrapAlignment.spaceBetween,
                                         children: [
                                           Text(
                                             'Sale: ${AppTheme.formatCurrency(p.salePrice)}',
                                             style: const TextStyle(
                                               fontWeight: FontWeight.w700,
-                                              fontSize: 13,
+                                              fontSize: 12.5,
                                               color: AppTheme.primaryGreenDark,
                                             ),
                                           ),

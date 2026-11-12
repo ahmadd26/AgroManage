@@ -162,10 +162,14 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
                                           Text(
                                             inv.customer.name,
                                             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
                                           Text(
                                             '${inv.items.length} items · Payment: ${inv.paymentMethod}',
                                             style: const TextStyle(fontSize: 11.5, color: AppTheme.textMuted),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
                                         ],
                                       ),

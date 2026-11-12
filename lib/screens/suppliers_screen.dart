@@ -136,10 +136,14 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
                             Text(
                               s.name,
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                             Text(
                               '${s.city} · Tel: ${s.phone}${s.representative.isNotEmpty ? " (Rep: ${s.representative})" : ""}',
                               style: const TextStyle(color: AppTheme.textMuted, fontSize: 12),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ],
                         ),
@@ -150,16 +154,24 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
                   const Divider(height: 1),
                   const SizedBox(height: 8),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _statMini('Orders', '$ordersCount Inwards'),
-                      _statMini('Total Volume', AppTheme.formatCurrency(purchased)),
-                      _statMini('Paid', AppTheme.formatCurrency(paid)),
-                      _statMini(
-                        'Payable Due',
-                        AppTheme.formatCurrency(balance),
-                        color: balance > 0 ? AppTheme.alertRed : AppTheme.primaryGreenDark,
-                        isBold: true,
+                      Expanded(child: _statMini('Orders', '$ordersCount Inwards')),
+                      const SizedBox(width: 8),
+                      Expanded(child: _statMini('Total Volume', AppTheme.formatCurrency(purchased))),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(child: _statMini('Paid', AppTheme.formatCurrency(paid))),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _statMini(
+                          'Payable Due',
+                          AppTheme.formatCurrency(balance),
+                          color: balance > 0 ? AppTheme.alertRed : AppTheme.primaryGreenDark,
+                          isBold: true,
+                        ),
                       ),
                     ],
                   ),
@@ -176,14 +188,18 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 11, color: AppTheme.textMuted)),
+        Text(label, style: const TextStyle(fontSize: 10.5, color: AppTheme.textMuted), maxLines: 1, overflow: TextOverflow.ellipsis),
         const SizedBox(height: 2),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 12.5,
-            fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
-            color: color,
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            value,
+            style: TextStyle(
+              fontSize: 12.5,
+              fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
+              color: color,
+            ),
           ),
         ),
       ],

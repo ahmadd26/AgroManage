@@ -77,31 +77,34 @@ class _CustomersScreenState extends State<CustomersScreen> {
             ),
           ),
 
-          // Filters
+          // Filters (Horizontally scrollable to prevent overflow)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            child: Row(
-              children: [
-                ChoiceChip(
-                  label: const Text('All Farmers'),
-                  selected: _filterStatus == 'All',
-                  onSelected: (_) => setState(() => _filterStatus = 'All'),
-                ),
-                const SizedBox(width: 8),
-                ChoiceChip(
-                  label: const Text('With Dues (Khata)'),
-                  selected: _filterStatus == 'Dues Only',
-                  selectedColor: AppTheme.accentAmber,
-                  onSelected: (_) => setState(() => _filterStatus = 'Dues Only'),
-                ),
-                const SizedBox(width: 8),
-                ChoiceChip(
-                  label: const Text('Cleared'),
-                  selected: _filterStatus == 'Clear',
-                  selectedColor: AppTheme.primaryGreen,
-                  onSelected: (_) => setState(() => _filterStatus = 'Clear'),
-                ),
-              ],
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  ChoiceChip(
+                    label: const Text('All Farmers'),
+                    selected: _filterStatus == 'All',
+                    onSelected: (_) => setState(() => _filterStatus = 'All'),
+                  ),
+                  const SizedBox(width: 8),
+                  ChoiceChip(
+                    label: const Text('With Dues (Khata)'),
+                    selected: _filterStatus == 'Dues Only',
+                    selectedColor: AppTheme.accentAmber,
+                    onSelected: (_) => setState(() => _filterStatus = 'Dues Only'),
+                  ),
+                  const SizedBox(width: 8),
+                  ChoiceChip(
+                    label: const Text('Cleared'),
+                    selected: _filterStatus == 'Clear',
+                    selectedColor: AppTheme.primaryGreen,
+                    onSelected: (_) => setState(() => _filterStatus = 'Clear'),
+                  ),
+                ],
+              ),
             ),
           ),
 
@@ -149,10 +152,14 @@ class _CustomersScreenState extends State<CustomersScreen> {
                                           Text(
                                             c.name,
                                             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
                                           Text(
                                             '${c.phone} · ${c.address}',
                                             style: const TextStyle(fontSize: 12, color: AppTheme.textMuted),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
                                         ],
                                       ),
@@ -167,15 +174,18 @@ class _CustomersScreenState extends State<CustomersScreen> {
                                 const Divider(height: 8),
                                 const SizedBox(height: 6),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    _statMini('Total Billed', AppTheme.formatCurrency(billed)),
-                                    _statMini('Total Paid', AppTheme.formatCurrency(paid)),
-                                    _statMini(
-                                      'Current Balance',
-                                      AppTheme.formatCurrency(balance),
-                                      color: balance > 0 ? AppTheme.alertRed : AppTheme.primaryGreenDark,
-                                      isBold: true,
+                                    Expanded(child: _statMini('Total Billed', AppTheme.formatCurrency(billed))),
+                                    const SizedBox(width: 6),
+                                    Expanded(child: _statMini('Total Paid', AppTheme.formatCurrency(paid))),
+                                    const SizedBox(width: 6),
+                                    Expanded(
+                                      child: _statMini(
+                                        'Current Balance',
+                                        AppTheme.formatCurrency(balance),
+                                        color: balance > 0 ? AppTheme.alertRed : AppTheme.primaryGreenDark,
+                                        isBold: true,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -196,14 +206,18 @@ class _CustomersScreenState extends State<CustomersScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 11, color: AppTheme.textMuted)),
+        Text(label, style: const TextStyle(fontSize: 10.5, color: AppTheme.textMuted), maxLines: 1, overflow: TextOverflow.ellipsis),
         const SizedBox(height: 2),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 12.5,
-            fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
-            color: color,
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            value,
+            style: TextStyle(
+              fontSize: 12.5,
+              fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
+              color: color,
+            ),
           ),
         ),
       ],

@@ -79,38 +79,79 @@ class _ReportsScreenState extends State<ReportsScreen> {
             // Tab Content
             if (_selectedTabIndex == 2) ...[
               // Profit / Loss Statement
-              Row(
-                children: [
-                  Expanded(
-                    child: KpiCard(
-                      title: 'Total Revenue',
-                      value: AppTheme.formatCurrency(sales),
-                      icon: Icons.trending_up,
-                      color: AppTheme.secondaryBlue,
-                      bgTint: AppTheme.secondaryBlueLight,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: KpiCard(
-                      title: 'Gross Margin',
-                      value: AppTheme.formatCurrency(grossProfit),
-                      icon: Icons.pie_chart_outline,
-                      color: AppTheme.primaryGreen,
-                      bgTint: AppTheme.primaryGreenLight,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: KpiCard(
-                      title: 'Net Profit',
-                      value: AppTheme.formatCurrency(netProfit),
-                      icon: Icons.account_balance,
-                      color: AppTheme.primaryGreenDark,
-                      bgTint: AppTheme.primaryGreenLight,
-                    ),
-                  ),
-                ],
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  if (constraints.maxWidth < 550) {
+                    return Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: KpiCard(
+                                title: 'Total Revenue',
+                                value: AppTheme.formatCurrency(sales),
+                                icon: Icons.trending_up,
+                                color: AppTheme.secondaryBlue,
+                                bgTint: AppTheme.secondaryBlueLight,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: KpiCard(
+                                title: 'Gross Margin',
+                                value: AppTheme.formatCurrency(grossProfit),
+                                icon: Icons.pie_chart_outline,
+                                color: AppTheme.primaryGreen,
+                                bgTint: AppTheme.primaryGreenLight,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        KpiCard(
+                          title: 'Net Profit',
+                          value: AppTheme.formatCurrency(netProfit),
+                          icon: Icons.account_balance,
+                          color: AppTheme.primaryGreenDark,
+                          bgTint: AppTheme.primaryGreenLight,
+                        ),
+                      ],
+                    );
+                  }
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: KpiCard(
+                          title: 'Total Revenue',
+                          value: AppTheme.formatCurrency(sales),
+                          icon: Icons.trending_up,
+                          color: AppTheme.secondaryBlue,
+                          bgTint: AppTheme.secondaryBlueLight,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: KpiCard(
+                          title: 'Gross Margin',
+                          value: AppTheme.formatCurrency(grossProfit),
+                          icon: Icons.pie_chart_outline,
+                          color: AppTheme.primaryGreen,
+                          bgTint: AppTheme.primaryGreenLight,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: KpiCard(
+                          title: 'Net Profit',
+                          value: AppTheme.formatCurrency(netProfit),
+                          icon: Icons.account_balance,
+                          color: AppTheme.primaryGreenDark,
+                          bgTint: AppTheme.primaryGreenLight,
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 16),
               Card(
@@ -171,8 +212,17 @@ class _ReportsScreenState extends State<ReportsScreen> {
                   itemBuilder: (context, i) {
                     final inv = state.invoices[i];
                     return ListTile(
-                      title: Text('${inv.invoiceNo} · ${inv.customer.name}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5)),
-                      subtitle: Text('${AppTheme.formatDate(inv.date)} · ${inv.paymentMethod}'),
+                      title: Text(
+                        '${inv.invoiceNo} · ${inv.customer.name}',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      subtitle: Text(
+                        '${AppTheme.formatDate(inv.date)} · ${inv.paymentMethod}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       trailing: Text(AppTheme.formatCurrency(inv.grandTotal), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                     );
                   },
@@ -213,8 +263,17 @@ class _ReportsScreenState extends State<ReportsScreen> {
                   itemBuilder: (context, i) {
                     final p = state.products[i];
                     return ListTile(
-                      title: Text(p.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                      subtitle: Text('In Stock: ${p.stock} ${p.unit} · Unit Cost: ${AppTheme.formatCurrency(p.buyPrice)}'),
+                      title: Text(
+                        p.name,
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      subtitle: Text(
+                        'In Stock: ${p.stock} ${p.unit} · Unit Cost: ${AppTheme.formatCurrency(p.buyPrice)}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       trailing: Text(AppTheme.formatCurrency(p.stock * p.buyPrice), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5)),
                     );
                   },

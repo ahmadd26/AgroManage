@@ -95,7 +95,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         ],
       ),
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: const BoxDecoration(
           color: Colors.white,
           border: Border(top: BorderSide(color: AppTheme.lightLine)),
@@ -105,19 +105,25 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: () => _showAdjustStockDialog(product),
-                icon: const Icon(Icons.inventory_2_outlined),
-                label: const Text('Adjust Stock'),
+                icon: const Icon(Icons.inventory_2_outlined, size: 18),
+                label: const FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text('Adjust Stock'),
+                ),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 10),
             Expanded(
               child: ElevatedButton.icon(
                 onPressed: () {
                   widget.state.addCartLine(product);
                   widget.onSellProduct();
                 },
-                icon: const Icon(Icons.point_of_sale),
-                label: const Text('Add to POS Sale'),
+                icon: const Icon(Icons.point_of_sale, size: 18),
+                label: const FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text('Add to POS Sale'),
+                ),
               ),
             ),
           ],
@@ -269,15 +275,23 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(color: AppTheme.textMuted, fontSize: 13.5)),
-          Text(
-            value,
-            style: TextStyle(
-              fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
-              fontSize: 14,
-              color: valueColor,
+          Expanded(
+            flex: 5,
+            child: Text(label, style: const TextStyle(color: AppTheme.textMuted, fontSize: 13.5)),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            flex: 6,
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
+                fontSize: 14,
+                color: valueColor,
+              ),
             ),
           ),
         ],

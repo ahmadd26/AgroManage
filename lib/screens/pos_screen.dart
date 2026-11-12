@@ -183,11 +183,14 @@ class _PosScreenState extends State<PosScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 8),
                       OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                        ),
                         onPressed: widget.onAddCustomer,
-                        icon: const Icon(Icons.person_add_outlined, size: 18),
-                        label: const Text('Add Farmer', style: TextStyle(fontSize: 12.5)),
+                        icon: const Icon(Icons.person_add_outlined, size: 16),
+                        label: const Text('Add', style: TextStyle(fontSize: 12)),
                       ),
                     ],
                   ),
@@ -233,87 +236,121 @@ class _PosScreenState extends State<PosScreen> {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: state.cartLines.length,
-                      separatorBuilder: (_, __) => const Divider(height: 16),
+                      separatorBuilder: (_, __) => const SizedBox(height: 10),
                       itemBuilder: (context, index) {
                         final line = state.cartLines[index];
 
-                        return Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            // Product dropdown
-                            Expanded(
-                              flex: 4,
-                              child: DropdownButtonFormField<Product>(
-                                initialValue: line.product,
-                                isExpanded: true,
-                                decoration: const InputDecoration(
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                                ),
-                                items: state.products.map((p) {
-                                  return DropdownMenuItem(
-                                    value: p,
-                                    child: Text(
-                                      '${p.name} (Stk: ${p.stock})',
-                                      style: const TextStyle(fontSize: 12.5),
-                                      overflow: TextOverflow.ellipsis,
+                        return Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: AppTheme.lightBg,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: AppTheme.lightLine),
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: DropdownButtonFormField<Product>(
+                                      initialValue: line.product,
+                                      isExpanded: true,
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                        isDense: true,
+                                      ),
+                                      items: state.products.map((p) {
+                                        return DropdownMenuItem(
+                                          value: p,
+                                          child: Text(
+                                            '${p.name} (Stk: ${p.stock})',
+                                            style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        );
+                                      }).toList(),
+                                      onChanged: (p) {
+                                        if (p != null) {
+                                          setState(() {
+                                            line.product = p;
+                                            line.price = p.salePrice;
+                                          });
+                                        }
+                                      },
                                     ),
-                                  );
-                                }).toList(),
-                                onChanged: (p) {
-                                  if (p != null) {
-                                    setState(() {
-                                      line.product = p;
-                                      line.price = p.salePrice;
-                                    });
-                                  }
-                                },
+                                  ),
+                                  const SizedBox(width: 8),
+                                  IconButton(
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(),
+                                    icon: const Icon(Icons.close, color: AppTheme.alertRed, size: 20),
+                                    onPressed: () {
+                                      state.removeCartLine(index);
+                                      _recalc();
+                                    },
+                                  ),
+                                ],
                               ),
-                            ),
-                            const SizedBox(width: 8),
-
-                            // Quantity Stepper
-                            Row(
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.remove_circle_outline, size: 20),
-                                  onPressed: () {
-                                    state.updateCartLineQuantity(index, line.quantity - 1);
-                                    _recalc();
-                                  },
-                                ),
-                                Text(
-                                  '${line.quantity}',
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.add_circle_outline, size: 20),
-                                  onPressed: () {
-                                    state.updateCartLineQuantity(index, line.quantity + 1);
-                                    _recalc();
-                                  },
-                                ),
-                              ],
-                            ),
-                            const SizedBox(width: 8),
-
-                            // Line Total
-                            Expanded(
-                              flex: 2,
-                              child: Text(
-                                AppTheme.formatCurrency(line.lineTotal),
-                                textAlign: TextAlign.right,
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5),
+                              const SizedBox(height: 8),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  // Quantity Stepper with compact buttons
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(color: AppTheme.lightLine),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          padding: const EdgeInsets.all(4),
+                                          constraints: const BoxConstraints(),
+                                          icon: const Icon(Icons.remove, size: 16),
+                                          onPressed: () {
+                                            state.updateCartLineQuantity(index, line.quantity - 1);
+                                            _recalc();
+                                          },
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                          child: Text(
+                                            '${line.quantity}',
+                                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                                          ),
+                                        ),
+                                        IconButton(
+                                          padding: const EdgeInsets.all(4),
+                                          constraints: const BoxConstraints(),
+                                          icon: const Icon(Icons.add, size: 16),
+                                          onPressed: () {
+                                            state.updateCartLineQuantity(index, line.quantity + 1);
+                                            _recalc();
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  // Rate x Qty & Line Total
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        '@ ${AppTheme.formatCurrency(line.price)} = ',
+                                        style: const TextStyle(fontSize: 11.5, color: AppTheme.textMuted),
+                                      ),
+                                      Text(
+                                        AppTheme.formatCurrency(line.lineTotal),
+                                        style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: AppTheme.primaryGreenDark),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                            ),
-
-                            IconButton(
-                              icon: const Icon(Icons.close, color: AppTheme.alertRed, size: 18),
-                              onPressed: () {
-                                state.removeCartLine(index);
-                                _recalc();
-                              },
-                            ),
-                          ],
+                            ],
+                          ),
                         );
                       },
                     ),

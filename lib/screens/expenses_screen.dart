@@ -111,17 +111,24 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('Total Monthly Expenses', style: TextStyle(color: AppTheme.primaryGreenDark, fontWeight: FontWeight.bold, fontSize: 13)),
-                        const SizedBox(height: 4),
-                        Text(
-                          AppTheme.formatCurrency(state.totalExpenses),
-                          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: AppTheme.primaryGreenDark),
-                        ),
-                      ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Total Monthly Expenses', style: TextStyle(color: AppTheme.primaryGreenDark, fontWeight: FontWeight.bold, fontSize: 13)),
+                          const SizedBox(height: 4),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              AppTheme.formatCurrency(state.totalExpenses),
+                              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: AppTheme.primaryGreenDark),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                    const SizedBox(width: 10),
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
@@ -158,8 +165,18 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                       backgroundColor: AppTheme.alertRedLight,
                       child: Icon(Icons.money_off, color: AppTheme.alertRed, size: 20),
                     ),
-                    title: Text(exp.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                    subtitle: Text('${exp.category} · ${AppTheme.formatDate(exp.date)}', style: const TextStyle(fontSize: 12)),
+                    title: Text(
+                      exp.title,
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: Text(
+                      '${exp.category} · ${AppTheme.formatDate(exp.date)}',
+                      style: const TextStyle(fontSize: 12),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     trailing: Text(
                       '- ${AppTheme.formatCurrency(exp.amount)}',
                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.alertRed),

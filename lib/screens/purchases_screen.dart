@@ -38,39 +38,81 @@ class PurchasesScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // KPI Summary Row
-            Row(
-              children: [
-                Expanded(
-                  child: KpiCard(
-                    title: 'Total Stock Inward',
-                    value: AppTheme.formatCurrency(state.totalPurchases),
-                    icon: Icons.inventory_2_outlined,
-                    color: AppTheme.primaryGreen,
-                    bgTint: AppTheme.primaryGreenLight,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: KpiCard(
-                    title: 'Supplier Paid',
-                    value: AppTheme.formatCurrency(state.totalPurchasesPaid),
-                    icon: Icons.check_circle_outline,
-                    color: AppTheme.secondaryBlue,
-                    bgTint: AppTheme.secondaryBlueLight,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: KpiCard(
-                    title: 'Payables (Due)',
-                    value: AppTheme.formatCurrency(state.totalPurchases - state.totalPurchasesPaid),
-                    icon: Icons.pending_actions_outlined,
-                    color: AppTheme.alertRed,
-                    bgTint: AppTheme.alertRedLight,
-                  ),
-                ),
-              ],
+            // KPI Summary Row (Responsive)
+            LayoutBuilder(
+              builder: (context, constraints) {
+                if (constraints.maxWidth < 550) {
+                  return Column(
+                    children: [
+                      KpiCard(
+                        title: 'Total Stock Inward',
+                        value: AppTheme.formatCurrency(state.totalPurchases),
+                        icon: Icons.inventory_2_outlined,
+                        color: AppTheme.primaryGreen,
+                        bgTint: AppTheme.primaryGreenLight,
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: KpiCard(
+                              title: 'Supplier Paid',
+                              value: AppTheme.formatCurrency(state.totalPurchasesPaid),
+                              icon: Icons.check_circle_outline,
+                              color: AppTheme.secondaryBlue,
+                              bgTint: AppTheme.secondaryBlueLight,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: KpiCard(
+                              title: 'Payables (Due)',
+                              value: AppTheme.formatCurrency(state.totalPurchases - state.totalPurchasesPaid),
+                              icon: Icons.pending_actions_outlined,
+                              color: AppTheme.alertRed,
+                              bgTint: AppTheme.alertRedLight,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                }
+
+                return Row(
+                  children: [
+                    Expanded(
+                      child: KpiCard(
+                        title: 'Total Stock Inward',
+                        value: AppTheme.formatCurrency(state.totalPurchases),
+                        icon: Icons.inventory_2_outlined,
+                        color: AppTheme.primaryGreen,
+                        bgTint: AppTheme.primaryGreenLight,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: KpiCard(
+                        title: 'Supplier Paid',
+                        value: AppTheme.formatCurrency(state.totalPurchasesPaid),
+                        icon: Icons.check_circle_outline,
+                        color: AppTheme.secondaryBlue,
+                        bgTint: AppTheme.secondaryBlueLight,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: KpiCard(
+                        title: 'Payables (Due)',
+                        value: AppTheme.formatCurrency(state.totalPurchases - state.totalPurchasesPaid),
+                        icon: Icons.pending_actions_outlined,
+                        color: AppTheme.alertRed,
+                        bgTint: AppTheme.alertRedLight,
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
 
             const SizedBox(height: 20),
@@ -136,31 +178,37 @@ class PurchasesScreen extends StatelessWidget {
                         Text(
                           po.supplier.name,
                           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 4),
                         Text(
                           'Items Received: ${po.items.map((it) => '${it.product.name.split(" ").take(2).join(" ")} x${it.quantity}').join(", ")}',
                           style: const TextStyle(fontSize: 12, color: AppTheme.textMuted),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 10),
                         const Divider(height: 1),
                         const SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        Wrap(
+                          spacing: 12,
+                          runSpacing: 4,
+                          alignment: WrapAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Total Cost: ${AppTheme.formatCurrency(po.grandTotal)}',
-                              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+                              'Total: ${AppTheme.formatCurrency(po.grandTotal)}',
+                              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5),
                             ),
                             Text(
                               'Paid: ${AppTheme.formatCurrency(po.paidAmount)}',
                               style: const TextStyle(fontSize: 12, color: AppTheme.textMuted),
                             ),
                             Text(
-                              'Balance: ${AppTheme.formatCurrency(po.remainingBalance)}',
+                              'Due: ${AppTheme.formatCurrency(po.remainingBalance)}',
                               style: TextStyle(
+                                fontSize: 12.5,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 13,
                                 color: po.remainingBalance > 0 ? AppTheme.alertRed : AppTheme.primaryGreenDark,
                               ),
                             ),

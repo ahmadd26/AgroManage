@@ -161,13 +161,26 @@ class _RecordPaymentScreenState extends State<RecordPaymentScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(_selectedInvoice!.customer.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5)),
-                                Text('Total Billed: ${AppTheme.formatCurrency(_selectedInvoice!.grandTotal)}', style: const TextStyle(fontSize: 11.5, color: AppTheme.textMuted)),
-                              ],
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _selectedInvoice!.customer.name,
+                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    'Total Billed: ${AppTheme.formatCurrency(_selectedInvoice!.grandTotal)}',
+                                    style: const TextStyle(fontSize: 11.5, color: AppTheme.textMuted),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
                             ),
+                            const SizedBox(width: 8),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [

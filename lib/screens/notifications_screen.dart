@@ -62,8 +62,17 @@ class NotificationsScreen extends StatelessWidget {
                     margin: const EdgeInsets.only(bottom: 8),
                     child: ListTile(
                       onTap: () => onSelectProduct(p.id),
-                      title: Text(p.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5)),
-                      subtitle: Text('Current Stock: ${p.stock} ${p.unit} · Min Threshold: ${p.minStock}'),
+                      title: Text(
+                        p.name,
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      subtitle: Text(
+                        'Stock: ${p.stock} ${p.unit} · Min: ${p.minStock}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       trailing: StatusBadge(text: '${p.stock} left', type: 'r'),
                     ),
                   )),
@@ -91,8 +100,17 @@ class NotificationsScreen extends StatelessWidget {
                     margin: const EdgeInsets.only(bottom: 8),
                     child: ListTile(
                       onTap: () => onSelectProduct(p.id),
-                      title: Text(p.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5)),
-                      subtitle: Text('Category: ${p.category} · Expiry Date: ${AppTheme.formatDate(p.expiryDate)}'),
+                      title: Text(
+                        p.name,
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      subtitle: Text(
+                        '${p.category} · Exp: ${AppTheme.formatDate(p.expiryDate)}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       trailing: const StatusBadge(text: 'Expiring soon', type: 'a'),
                     ),
                   )),
@@ -120,8 +138,17 @@ class NotificationsScreen extends StatelessWidget {
                     margin: const EdgeInsets.only(bottom: 8),
                     child: ListTile(
                       onTap: () => onViewInvoice(inv.invoiceNo),
-                      title: Text('${inv.customer.name} · ${inv.invoiceNo}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5)),
-                      subtitle: Text('Due: ${AppTheme.formatDate(inv.dueDate)} · Overdue Amount: ${AppTheme.formatCurrency(inv.remainingBalance)}'),
+                      title: Text(
+                        '${inv.customer.name} · ${inv.invoiceNo}',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      subtitle: Text(
+                        'Due: ${AppTheme.formatDate(inv.dueDate)} · Overdue: ${AppTheme.formatCurrency(inv.remainingBalance)}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       trailing: const StatusBadge(text: 'Overdue', type: 'r'),
                     ),
                   )),

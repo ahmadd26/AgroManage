@@ -47,39 +47,81 @@ class _InstallmentsScreenState extends State<InstallmentsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // KPI Overview Banner
-            Row(
-              children: [
-                Expanded(
-                  child: KpiCard(
-                    title: 'Total Outstanding',
-                    value: AppTheme.formatCurrency(state.totalOutstandingKhata),
-                    icon: Icons.account_balance_wallet,
-                    color: AppTheme.accentAmber,
-                    bgTint: AppTheme.accentAmberLight,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: KpiCard(
-                    title: 'Overdue Plans',
-                    value: '$overdueCount',
-                    icon: Icons.error_outline,
-                    color: AppTheme.alertRed,
-                    bgTint: AppTheme.alertRedLight,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: KpiCard(
-                    title: 'Active Plans',
-                    value: '$pendingCount',
-                    icon: Icons.schedule,
-                    color: AppTheme.secondaryBlue,
-                    bgTint: AppTheme.secondaryBlueLight,
-                  ),
-                ),
-              ],
+            // KPI Overview Banner (Responsive Layout)
+            LayoutBuilder(
+              builder: (context, constraints) {
+                if (constraints.maxWidth < 550) {
+                  return Column(
+                    children: [
+                      KpiCard(
+                        title: 'Total Outstanding Khata',
+                        value: AppTheme.formatCurrency(state.totalOutstandingKhata),
+                        icon: Icons.account_balance_wallet,
+                        color: AppTheme.accentAmber,
+                        bgTint: AppTheme.accentAmberLight,
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: KpiCard(
+                              title: 'Overdue Plans',
+                              value: '$overdueCount',
+                              icon: Icons.error_outline,
+                              color: AppTheme.alertRed,
+                              bgTint: AppTheme.alertRedLight,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: KpiCard(
+                              title: 'Active Plans',
+                              value: '$pendingCount',
+                              icon: Icons.schedule,
+                              color: AppTheme.secondaryBlue,
+                              bgTint: AppTheme.secondaryBlueLight,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                }
+
+                return Row(
+                  children: [
+                    Expanded(
+                      child: KpiCard(
+                        title: 'Total Outstanding',
+                        value: AppTheme.formatCurrency(state.totalOutstandingKhata),
+                        icon: Icons.account_balance_wallet,
+                        color: AppTheme.accentAmber,
+                        bgTint: AppTheme.accentAmberLight,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: KpiCard(
+                        title: 'Overdue Plans',
+                        value: '$overdueCount',
+                        icon: Icons.error_outline,
+                        color: AppTheme.alertRed,
+                        bgTint: AppTheme.alertRedLight,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: KpiCard(
+                        title: 'Active Plans',
+                        value: '$pendingCount',
+                        icon: Icons.schedule,
+                        color: AppTheme.secondaryBlue,
+                        bgTint: AppTheme.secondaryBlueLight,
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
 
             const SizedBox(height: 16),
@@ -128,19 +170,26 @@ class _InstallmentsScreenState extends State<InstallmentsScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    inv.customer.name,
-                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                                  ),
-                                  Text(
-                                    '${inv.customer.phone} · ${inv.customer.address}',
-                                    style: const TextStyle(fontSize: 12, color: AppTheme.textMuted),
-                                  ),
-                                ],
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      inv.customer.name,
+                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      '${inv.customer.phone} · ${inv.customer.address}',
+                                      style: const TextStyle(fontSize: 12, color: AppTheme.textMuted),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
                               ),
+                              const SizedBox(width: 8),
                               StatusBadge(text: inv.status),
                             ],
                           ),
@@ -160,24 +209,30 @@ class _InstallmentsScreenState extends State<InstallmentsScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                'Monthly Due: ${AppTheme.formatCurrency(inv.installmentAmount ?? (inv.remainingBalance / 3))} · Due Date: ${AppTheme.formatDate(inv.dueDate)}',
-                                style: TextStyle(
-                                  fontSize: 11.5,
-                                  fontWeight: FontWeight.w600,
-                                  color: inv.status == 'Overdue' ? AppTheme.alertRed : AppTheme.textMuted,
+                              Expanded(
+                                child: Text(
+                                  'Monthly: ${AppTheme.formatCurrency(inv.installmentAmount ?? (inv.remainingBalance / 3))} · Due: ${AppTheme.formatDate(inv.dueDate)}',
+                                  style: TextStyle(
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w600,
+                                    color: inv.status == 'Overdue' ? AppTheme.alertRed : AppTheme.textMuted,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              if (inv.remainingBalance > 0)
+                              if (inv.remainingBalance > 0) ...[
+                                const SizedBox(width: 8),
                                 ElevatedButton.icon(
                                   onPressed: () => widget.onRecordPayment(inv.invoiceNo),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppTheme.primaryGreen,
-                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                                   ),
-                                  icon: const Icon(Icons.payment, size: 16),
-                                  label: const Text('Record Payment', style: TextStyle(fontSize: 12)),
+                                  icon: const Icon(Icons.payment, size: 14),
+                                  label: const Text('Pay', style: TextStyle(fontSize: 12)),
                                 ),
+                              ],
                             ],
                           ),
                         ],
@@ -196,11 +251,14 @@ class _InstallmentsScreenState extends State<InstallmentsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 11, color: AppTheme.textMuted)),
+        Text(label, style: const TextStyle(fontSize: 10.5, color: AppTheme.textMuted)),
         const SizedBox(height: 2),
-        Text(
-          value,
-          style: TextStyle(fontSize: 12.5, fontWeight: isBold ? FontWeight.bold : FontWeight.w600, color: color),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            value,
+            style: TextStyle(fontSize: 12, fontWeight: isBold ? FontWeight.bold : FontWeight.w600, color: color),
+          ),
         ),
       ],
     );
